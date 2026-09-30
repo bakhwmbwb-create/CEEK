@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم والمطورين - أسرة دانيال النبي</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f0c0a;
+      --card-bg: #1a1412;
+      --primary-blue: #3a86ff;
+      --accent-gold: #d4a373;
+      --danger-red: #e63946;
+      --text-light: #f4f1de;
+      --text-muted: #8e8779;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      min-height: 100vh;
+      padding: 20px 15px 50px 15px;
+    }
+
+    .container { max-width: 850px; margin: 0 auto; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    h2, h3 { color: var(--accent-gold); margin-bottom: 15px; text-align: center; }
+
+    .form-group { margin-bottom: 15px; }
+
+    label { display: block; margin-bottom: 6px; font-size: 0.9rem; font-weight: 600; color: var(--text-light); }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input[type="file"] {
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .checkbox-group input {
+      width: auto;
+      cursor: pointer;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary { background: var(--primary-blue); color: #fff; }
+    .btn-danger { background: var(--danger-red); color: #fff; }
+
+    #devPanel { display: none; }
+
+    .post-item {
+      background: rgba(0,0,0,0.3);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-back { display: inline-block; margin-bottom: 15px; color: var(--primary-blue); text-decoration: none; font-weight: 700; }
+
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    th {
+      background-color: rgba(58, 134, 255, 0.2);
+      color: var(--primary-blue);
+    }
+
+    code {
+      background: rgba(255,255,255,0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent-gold);
+    }
+
+    .btn-delete-user {
+      background: var(--danger-red);
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: opacity 0.2s;
+    }
+
+    .btn-delete-user:hover {
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="index.html" class="nav-back">➡️ العودة إلى الصفحة الرئيسية</a>
+
+    <div id="devPanel">
+      
+      <!-- 1. جدول الحسابات المسجلة -->
+      <div class="card">
+        <h3>👥 الحسابات المسجلة بالمنصة</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>الاسم الكامل</th>
+                <th>البريد الإلكتروني</th>
+                <th>كلمة المرور</th>
+                <th>الأسرة</th>
+                <th>إجراء</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+        <button class="btn btn-danger" style="margin-top: 15px;" onclick="clearAllUsers()">مسح كافة الحسابات المسجلة 🗑️</button>
+      </div>
+
+      <!-- 2. إضافة منشور جديد -->
+      <div class="card">
+        <h2>➕ إضافة منشور جديد</h2>
+        
+        <div class="form-group">
+          <label>اختر الصفحة المستهدفة للنشر:</label>
+          <select id="targetPage" onchange="toggleSubCategory()">
+            <option value="home">📰 قسم الأخبار (index.html)</option>
+            <option value="lessons">📚 قسم الدروس (lessons.html)</option>
+            <option value="family">🤝 قسم الأسر (families.html)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="subCategoryGroup" style="display: none;">
+          <label>اختر الأسرة المحددة:</label>
+          <select id="subCategory">
+            <option value="samayeen">✨ أسرة السمائيين</option>
+            <option value="media">📸 أسرة الميديا</option>
+            <option value="trips">🚌 أسرة الرحلات والمؤتمرات</option>
+            <option value="hymns">🎶 أسرة الترانيم</option>
+            <option value="prayer">🙏 أسرة الصلاة</option>
+          </select>
+
+          <div class="checkbox-group" style="margin-top: 10px;">
+            <input type="checkbox" id="alsoPostToHome">
+            <label for="alsoPostToHome" style="margin: 0; cursor: pointer;">🌐 عرض المنشور أيضاً في قسم الأخبار بالصفحة الرئيسية</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>نوع المحتوى:</label>
+          <select id="contentType" onchange="toggleInputType()">
+            <option value="text">✍️ نص كتابي فقط</option>
+            <option value="image">🖼️ صورة من الجهاز (+ نص مصاحب)</option>
+            <option value="video">🎥 فيديو من الجهاز (+ نص مصاحب)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="textInputGroup">
+          <label id="textLabel">النص الكتابي:</label>
+          <textarea id="postContent" rows="3" placeholder="اكتب نص المنشور هنا..."></textarea>
+        </div>
+
+        <div class="form-group" id="fileInputGroup" style="display: none;">
+          <label id="fileLabel">اختر الملف من جهازك:</label>
+          <input type="file" id="fileInput" accept="image/*">
+        </div>
+
+        <button class="btn btn-primary" onclick="createNewPost()">🚀 نشر الآن</button>
+      </div>
+
+      <!-- 3. قائمة إدارة المنشورات -->
+      <div class="card">
+        <h3>🗑️ إدارة وحذف المنشورات المنشورة</h3>
+        <div id="postsList"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const ALLOWED_EMAILS = [
+      'bakhwmbwb@gmail.com',
+      'minaamonyos@gmail.com'
+    ];
+
+    const familyNames = {
+      'samayeen': '✨ أسرة السمائيين',
+      'media': '📸 أسرة الميديا',
+      'trips': '🚌 أسرة الرحلات والمؤتمرات',
+      'hymns': '🎶 أسرة الترانيم',
+      'prayer': '🙏 أسرة الصلاة'
+    };
+
+    function checkUserAccess() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      
+      if (!currentUser || !currentUser.email) {
+        alert('⚠️ يرجى تسجيل الدخول بحساب المطور أولاً للوصول لهذه الصفحة.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const userEmail = currentUser.email.trim().toLowerCase();
+      
+      if (!ALLOWED_EMAILS.includes(userEmail)) {
+        alert('❌ عذراً، هذا الحساب ليس لديه صلاحية الوصول لصفحة التطوير.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      document.getElementById('devPanel').style.display = 'block';
+      loadManagePosts();
+      loadRegisteredUsers();
+    }
+
+    function loadRegisteredUsers() {
+      const usersTableBody = document.getElementById('usersTableBody');
+      const users = JSON.parse(localStorage.getItem('users')) || JSON.parse(localStorage.getItem('registeredUsers')) || [];
+
+      usersTableBody.innerHTML = '';
+
+      if (users.length === 0) {
+        usersTableBody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 15px;">لا توجد أي حسابات مسجلة حتى الآن.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      users.forEach((user, index) => {
+        const row = document.createElement('tr');
+        const familyText = familyNames[user.family] || user.family || 'لم يتم الاختيار';
+
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${user.name || 'غير محدد'}</td>
+          <td>${user.email || 'غير محدد'}</td>
+          <td><code>${user.password || 'غير محدد'}</code></td>
+          <td>${familyText}</td>
+          <td>
+            <button class="btn-delete-user" onclick="deleteUser(${index})">حذف 🗑</button>
+          </td>
+        `;
+        usersTableBody.appendChild(row);
+      });
+    }
+
+    function deleteUser(index) {
+      let users = JSON.parse(localStorage.getItem('users')) || JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      const userName = users[index] ? users[index].name || users[index].email : 'هذا الحساب';
+
+      if (confirm(`هل أنت تأكد من حذف حساب (${userName})؟`)) {
+        users.splice(index, 1);
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('registeredUsers', JSON.stringify(users));
+        loadRegisteredUsers();
+        alert('تم حذف الحساب بنجاح!');
+      }
+    }
+
+    function clearAllUsers() {
+      if (confirm('هل أنت متاكد من أنك تريد مسح كافة الحسابات المسجلة؟')) {
+        localStorage.removeItem('users');
+        localStorage.removeItem('registeredUsers');
+        loadRegisteredUsers();
+        alert('تم مسح جميع الحسابات بنجاح.');
+      }
+    }
+
+    function toggleSubCategory() {
+      const page = document.getElementById('targetPage').value;
+      document.getElementById('subCategoryGroup').style.display = (page === 'family') ? 'block' : 'none';
+    }
+
+    function toggleInputType() {
+      const type = document.getElementById('contentType').value;
+      const textGroup = document.getElementById('textInputGroup');
+      const fileGroup = document.getElementById('fileInputGroup');
+      const fileInput = document.getElementById('fileInput');
+      const textLabel = document.getElementById('textLabel');
+
+      if (type === 'text') {
+        textGroup.style.display = 'block';
+        fileGroup.style.display = 'none';
+        textLabel.innerText = 'النص الكتابي:';
+      } else {
+        textGroup.style.display = 'block';
+        fileGroup.style.display = 'block';
+
+        if (type === 'image') {
+          fileInput.accept = 'image/*';
+          document.getElementById('fileLabel').innerText = '📸 اختر صورة من الجهاز:';
+          textLabel.innerText = '✍️ وصف أو نص مصاحب للصورة (اختياري):';
+        } else if (type === 'video') {
+          fileInput.accept = 'video/*';
+          document.getElementById('fileLabel').innerText = '🎥 اختر فيديو من الجهاز:';
+          textLabel.innerText = '✍️ وصف أو نص مصاحب للفيديو (اختياري):';
+        }
+      }
+    }
+
+    function createNewPost() {
+      const targetPage = document.getElementById('targetPage').value;
+      const subCategory = targetPage === 'family' ? document.getElementById('subCategory').value : '';
+      const contentType = document.getElementById('contentType').value;
+      const textCaption = document.getElementById('postContent').value.trim();
+      const alsoPostToHome = document.getElementById('alsoPostToHome').checked;
+
+      if (contentType === 'text') {
+        if (!textCaption) return alert('يرجى كتابة نص المنشور!');
+        savePost(targetPage, subCategory, contentType, '', textCaption, alsoPostToHome);
+      } else {
+        const fileField = document.getElementById('fileInput');
+        if (!fileField.files || fileField.files.length === 0) {
+          return alert('يرجى اختيار ملف من الجهاز أولاً!');
+        }
+
+        const file = fileField.files[0];
+        if (file.size > 5000000) {
+          alert('⚠️ حجم الملف كبير، يفضل اختيار ملف أقل من 5 ميجابايت.');
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          savePost(targetPage, subCategory, contentType, e.target.result, textCaption, alsoPostToHome);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function savePost(targetPage, subCategory, contentType, mediaUrl, captionText, alsoHome) {
+      const timestamp = Date.now();
+      const posts = JSON.parse(localStorage.getItem('platform_posts') || '[]');
+
+      const primaryPost = {
+        id: 'post_' + timestamp,
+        targetPage: targetPage,
+        subCategory: subCategory,
+        type: contentType,
+        content: mediaUrl,
+        caption: captionText,
+        likes: 0,
+        comments: [],
+        createdAt: new Date().toLocaleDateString('ar-EG')
+      };
+      posts.unshift(primaryPost);
+
+      if (targetPage === 'family' && alsoHome) {
+        const homePost = {
+          id: 'post_' + timestamp + '_home',
+          targetPage: 'home',
+          subCategory: '',
+          type: contentType,
+          content: mediaUrl,
+          caption: `[منشور من ${familyNames[subCategory] || 'الأسرة'}]\n` + captionText,
+          likes: 0,
+          comments: [],
+          createdAt: new Date().toLocaleDateString('ar-EG')
+        };
+        posts.unshift(homePost);
+      }
+
+      try {
+        localStorage.setItem('platform_posts', JSON.stringify(posts));
+
+        alert('✅ تم النشر بنجاح!');
+        document.getElementById('postContent').value = '';
+        document.getElementById('fileInput').value = '';
+        document.getElementById('alsoPostToHome').checked = false;
+        loadManagePosts();
+      } catch (err) {
+        alert('❌ حدث خطأ، قد يكون حجم الملف كبيراً جداً بالنسبة لذاكرة المتصفح.');
+      }
+    }
+
+    function loadManagePosts() {
+      const posts = JSON.parse(localStorage.getItem('platform_posts') || '[]');
+      const container = document.getElementById('postsList');
+
+      if (posts.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:var(--text-muted);">لا توجد منشورات حالياً.</p>';
+        return;
+      }
+
+      const pageMap = { home: '📰 الأخبار', lessons: '📚 الدروس', family: '🤝 الأسر' };
+
+      container.innerHTML = '';
+      posts.forEach(post => {
+        const item = document.createElement('div');
+        item.className = 'post-item';
+        
+        let subText = post.subCategory ? ` (${familyNames[post.subCategory] || post.subCategory})` : '';
+        let displayDetail = post.type === 'text' 
+          ? post.caption.substring(0, 20) 
+          : `[${post.type === 'image' ? 'صورة' : 'فيديو'}] ${post.caption ? '- ' + post.caption.substring(0, 15) : ''}`;
+
+        item.innerHTML = `
+          <div>
+            <span style="color:var(--accent-gold); font-weight:bold;">[${pageMap[post.targetPage] || 'عام'}${subText}]</span>
+            <span style="font-size:0.85rem; margin-right:5px;">${displayDetail}</span>
+          </div>
+          <button class="btn btn-danger" style="width:auto; padding:5px 10px; font-size:0.8rem;" onclick="deletePost('${post.id}')">حذف 🗑</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function deletePost(id) {
+      if (confirm('هل أنت تأكد من حذف هذا المنشور؟')) {
+        let posts = JSON.parse(localStorage.getItem('platform_posts') || '[]');
+        posts = posts.filter(p => p.id !== id);
+        localStorage.setItem('platform_posts', JSON.stringify(posts));
+        loadManagePosts();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', checkUserAccess);
+  </script>
+</body>
+</html>

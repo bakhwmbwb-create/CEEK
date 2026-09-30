@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>أسرة دانيال النبي - المنصة الشاملة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f0c0a;
+      --card-bg: #1a1412;
+      --primary-blue: #3a86ff;
+      --accent-gold: #d4a373;
+      --danger-red: #e63946;
+      --text-light: #f4f1de;
+      --text-muted: #8e8779;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      min-height: 100vh;
+      padding-bottom: 50px;
+    }
+
+    /* الشريط العلوي */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      text-decoration: none;
+    }
+
+    .user-widget {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .user-info-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 6px 12px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: var(--text-light);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: 0.2s;
+    }
+
+    .user-info-btn:hover { background: rgba(255, 255, 255, 0.1); }
+
+    .user-avatar-sm {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-gold);
+    }
+
+    .btn-dev {
+      background: #7209b7;
+      color: #fff;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-logout {
+      background: var(--danger-red);
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .btn-login {
+      background: var(--primary-blue);
+      color: #fff;
+      text-decoration: none;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    /* شريط التنقل بين الأقسام */
+    .tabs-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--accent-gold);
+      color: #000;
+      border-color: var(--accent-gold);
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    /* كروت المنشورات */
+    .post-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .post-media {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin: 12px 0;
+    }
+
+    .post-caption {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    /* التعليقات والردود */
+    .comments-section {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .comment-item {
+      background: rgba(0,0,0,0.25);
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .comment-header, .reply-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .comment-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .comment-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .comment-actions button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      cursor: pointer;
+      margin-right: 6px;
+      font-weight: 600;
+    }
+
+    .comment-actions button:hover { color: var(--text-light); }
+
+    .comment-text {
+      font-size: 0.9rem;
+      color: #fff;
+      margin: 4px 0 6px 0;
+      white-space: pre-line;
+    }
+
+    .replies-container {
+      margin-right: 25px;
+      border-right: 2px solid rgba(212, 163, 115, 0.3);
+      padding-right: 10px;
+      margin-top: 8px;
+    }
+
+    .reply-item {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 6px 10px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }
+
+    .reply-input-box, .comment-input-box {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .reply-input-box input, .comment-input-box input {
+      flex: 1;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      color: #fff;
+      outline: none;
+      font-size: 0.85rem;
+    }
+
+    .reply-input-box button, .comment-input-box button {
+      background: var(--primary-blue);
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- الهيدر -->
+  <header>
+    <a href="index.html" class="logo">⛪ أسرة دانيال النبي</a>
+    <div class="user-widget" id="userAuthArea"></div>
+  </header>
+
+  <!-- شريط التبويب بما فيه رابط صفحة الأسر -->
+  <nav class="tabs-nav">
+    <button class="tab-btn active" onclick="switchCategory('all', this)">🌐 الكل</button>
+    <button class="tab-btn" onclick="switchCategory('home', this)">📰 الأخبار العامة</button>
+    <a href="families.html" class="tab-btn">👨‍👩‍👧‍👦 الأسر والخدمات</a>
+    <button class="tab-btn" onclick="switchCategory('lessons', this)">📚 الدروس والتأملات</button>
+  </nav>
+
+  <!-- الحاوية الرئيسية للمنشورات -->
+  <div class="container">
+    <div id="postsContainer"></div>
+  </div>
+
+  <script>
+    const DEFAULT_AVATAR = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+    const DEV_EMAILS = ['bakhwmbwb@gmail.com', 'minaamonyos@gmail.com'];
+    let currentCategory = 'all';
+
+    // 1. تحديث بيانات المستخدم في الهيدر
+    function updateHeaderAuth() {
+      const authArea = document.getElementById('userAuthArea');
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (currentUser && currentUser.email) {
+        const userAvatar = currentUser.avatar || DEFAULT_AVATAR;
+        const userName = currentUser.name || 'مستخدم';
+        const isDev = DEV_EMAILS.includes(currentUser.email.trim().toLowerCase());
+
+        let devButtonHtml = isDev ? `<a href="developer.html" class="btn-dev">🛠️ صفحة التطوير</a>` : '';
+
+        authArea.innerHTML = `
+          ${devButtonHtml}
+          <a href="profile.html" class="user-info-btn" title="الملف الشخصي">
+            <img src="${userAvatar}" class="user-avatar-sm" alt="profile">
+            <span>${userName}</span>
+          </a>
+          <button class="btn-logout" onclick="logout()">تسجيل خروج 🚪</button>
+        `;
+      } else {
+        authArea.innerHTML = `<a href="login.html" class="btn-login">تسجيل الدخول 🔑</a>`;
+      }
+    }
+
+    function logout() {
+      if (confirm('هل أنت تأكد من تسجيل الخروج؟')) {
+        localStorage.removeItem('currentUser');
+        updateHeaderAuth();
+        renderPosts();
+        alert('تم تسجيل الخروج بنجاح.');
+      }
+    }
+
+    // 2. التبديل بين الأقسام
+    function switchCategory(cat, btn) {
+      currentCategory = cat;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderPosts();
+    }
+
+    // 3. عرض المنشورات
+    function renderPosts() {
+      const container = document.getElementById('postsContainer');
+      const posts = JSON.parse(localStorage.getItem('platform_posts') || '[]');
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const currentUserEmail = currentUser ? currentUser.email.trim().toLowerCase() : '';
+
+      // تصفية المنشورات
+      let filteredPosts = posts;
+      if (currentCategory !== 'all') {
+        filteredPosts = posts.filter(p => p.targetPage === currentCategory);
+      }
+
+      if (filteredPosts.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color: var(--text-muted); margin-top:30px;">لا توجد منشورات متاحة في هذا القسم حالياً.</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+      filteredPosts.forEach(post => {
+        const postCard = document.createElement('div');
+        postCard.className = 'post-card';
+
+        let mediaHtml = '';
+        if (post.type === 'image' && post.content) {
+          mediaHtml = `<img src="${post.content}" class="post-media" alt="post-img">`;
+        } else if (post.type === 'video' && post.content) {
+          mediaHtml = `<video src="${post.content}" controls class="post-media"></video>`;
+        }
+
+        const commentsArr = post.comments || [];
+        let commentsHtml = commentsArr.map(c => {
+          const isOwner = currentUser && c.userEmail === currentUserEmail;
+
+          // زر الحذف متاح للجميع
+          let actionButtons = `<button onclick="deleteComment('${post.id}', '${c.id}')">🗑 حذف</button>`;
+
+          if (isOwner) {
+            actionButtons += `<button onclick="editComment('${post.id}', '${c.id}')">✏️ تعديل</button>`;
+          }
+          actionButtons += `<button onclick="toggleReplyBox('${c.id}')">↩️ رد</button>`;
+
+          // الردود مع الحذف للجميع
+          const replies = c.replies || [];
+          let repliesHtml = replies.map(r => `
+            <div class="reply-item">
+              <div class="reply-header">
+                <div class="comment-user">
+                  <img src="${r.userAvatar || DEFAULT_AVATAR}" class="comment-avatar">
+                  <strong style="color: var(--accent-gold); font-size: 0.8rem;">${r.userName}</strong>
+                </div>
+                <div class="comment-actions">
+                  <button onclick="deleteReply('${post.id}', '${c.id}', '${r.id}')">🗑️ حذف</button>
+                </div>
+              </div>
+              <p style="font-size: 0.85rem; margin: 2px 0 0 0;">${r.text}</p>
+            </div>
+          `).join('');
+
+          return `
+            <div class="comment-item">
+              <div class="comment-header">
+                <div class="comment-user">
+                  <img src="${c.userAvatar || DEFAULT_AVATAR}" class="comment-avatar">
+                  <strong style="color: var(--accent-gold); font-size: 0.85rem;">${c.userName}</strong>
+                </div>
+                <div class="comment-actions">${actionButtons}</div>
+              </div>
+
+              <p class="comment-text">${c.text}</p>
+
+              <div id="reply_box_${c.id}" class="reply-input-box" style="display:none;">
+                <input type="text" id="reply_input_${c.id}" placeholder="اكتب رداً على ${c.userName}...">
+                <button onclick="submitReply('${post.id}', '${c.id}')">إرسال</button>
+              </div>
+
+              <div class="replies-container">${repliesHtml}</div>
+            </div>
+          `;
+        }).join('');
+
+        postCard.innerHTML = `
+          <p class="post-caption">${post.caption || ''}</p>
+          ${mediaHtml}
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-align: left;">📅 ${post.createdAt || ''}</div>
+          
+          <div class="comments-section">
+            <h4 style="font-size: 0.9rem; margin-bottom: 8px; color: var(--accent-gold);">💬 التعليقات:</h4>
+            <div>${commentsHtml}</div>
+            
+            <div class="comment-input-box">
+              <input type="text" id="input_${post.id}" placeholder="اكتب تعليقاً...">
+              <button onclick="submitComment('${post.id}')">إرسال</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(postCard);
+      });
+    }
+
+    // إضافة تعليق
+    function submitComment(postId) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser || !currentUser.email) return alert('⚠️ يرجى تسجيل الدخول أولاً لترسل تعليقك!');
+
+      const inputEl = document.getElementById(`input_${postId}`);
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      let posts = JSON.parse(localStorage.getItem('platform_posts') || '[]');
+      let post = posts.find(p => p.id === postId);
+
+      if (post) {
+        post.comments = post.comments || [];
+        post.comments.push({
+          id: 'comm_' + Date.now(),
+          userEmail: currentUser.email.trim().toLowerCase(),
+          userName: currentUser.name || 'مستخدم',
+          userAvatar: currentUser.avatar || DEFAULT_AVATAR,
+          text: text,
+          replies: []
+        });
+
+        localStorage.setItem('platform_posts', JSON.stringify(posts));
+        renderPosts();
+      }
+    }
+
+    // حذف تعليق
+    function deleteComment(postId, commentId) {
+      if (confirm('هل أنت متاكد من حذف هذا التعليق؟')) {
+        let posts = JSON.parse(localStorage.getItem('platform_posts') || '[]');
+        let post = posts.find(p => p.id === postId);
+
+        if (post && post.comments) {
+          post.comments = post.comments.filter(c => c.id !== commentId);
+          localStorage.setItem('platform_posts', JSON.stringify(posts));
+          renderPosts();
+        }
+      }
+    }
+
+    // حذف رد
+    function deleteReply(postId, commentId, replyId) {
+      if (confirm('هل أنت متاكد من حذف هذا الرد؟')) {
+        let posts = JSON.parse(localStorage.getItem('platform_posts') || '[]');
+        let post = posts.find(p => p.id === postId);
+
+        if (post && post.comments) {
+          let comment = post.comments.find(c => c.id === commentId);
+          if (comment && comment.replies) {
+            comment.replies = comment.replies.filter(r => r.id !== replyId);
+            localStorage.setItem('platform_posts', JSON.stringify(posts));
+            renderPosts();
+          }
+        }
+      }
+    }
+
+    // تعديل تعليق
+    function editComment(postId, commentId) {
+      let posts = JSON.parse(localStorage.getItem('platform_posts') || '[]');
+      let post = posts.find(p => p.id === postId);
+
+      if (post && post.comments) {
+        let comment = post.comments.find(c => c.id === commentId);
+        if (comment) {
+          let newText = prompt('تعديل التعليق:', comment.text);
+          if (newText !== null && newText.trim() !== '') {
+            comment.text = newText.trim();
+            localStorage.setItem('platform_posts', JSON.stringify(posts));
+            renderPosts();
+          }
+        }
+      }
+    }
+
+    function toggleReplyBox(commentId) {
+      const box = document.getElementById(`reply_box_${commentId}`);
+      box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    // إرسال رد
+    function submitReply(postId, commentId) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser || !currentUser.email) return alert('⚠️ يرجى تسجيل الدخول أولاً للرد على التعليق!');
+
+      const inputEl = document.getElementById(`reply_input_${commentId}`);
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      let posts = JSON.parse(localStorage.getItem('platform_posts') || '[]');
+      let post = posts.find(p => p.id === postId);
+
+      if (post && post.comments) {
+        let comment = post.comments.find(c => c.id === commentId);
+        if (comment) {
+          comment.replies = comment.replies || [];
+          comment.replies.push({
+            id: 'rep_' + Date.now(),
+            userEmail: currentUser.email.trim().toLowerCase(),
+            userName: currentUser.name || 'مستخدم',
+            userAvatar: currentUser.avatar || DEFAULT_AVATAR,
+            text: text
+          });
+
+          localStorage.setItem('platform_posts', JSON.stringify(posts));
+          renderPosts();
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateHeaderAuth();
+      renderPosts();
+    });
+  </script>
+</body>
+</html>
